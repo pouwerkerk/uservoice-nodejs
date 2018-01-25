@@ -18,11 +18,14 @@ export class Client {
   public ticketAssetService = new AssetService(this);
   public customFieldService = new CustomFieldService(this);
   private baseUrl: string;
+  private prefix: string;
 
   constructor(private clientOptions: IClientOptions, private oAuthProviderInstance: IOAuthProvider = new OAuthProvider()) {
-    this.baseUrl = `https://${clientOptions.subdomain}.${clientOptions.domain || 'uservoice.com'}/api/v1/`;
+    // this.baseUrl = `https://${clientOptions.subdomain}.${clientOptions.domain || 'uservoice.com'}/api/v1/`;
+    this.baseUrl = `https://${clientOptions.subdomain}.${clientOptions.domain || 'uservoice.com'}/`;
+    this.prefix = "api/v1/";
     this.requestOptions = this.mergeOptions(clientOptions.options);
-    this.consumer = oAuthProviderInstance.getConsumer(this.baseUrl, clientOptions.apiKey, clientOptions.apiSecret);
+    this.consumer = oAuthProviderInstance.getConsumer(this.baseUrl + this.prefix, clientOptions.apiKey, clientOptions.apiSecret);
   }
 
   /**
@@ -47,10 +50,10 @@ export class Client {
         .then(response => this.loginWithAccessToken(response.token.oauth_token, response.token.oauth_token_secret)));
   }
 
-  public get<T>(endpoint: string, data: any = {}) {
+  public get<T>(endpoint: string, data: any = {}, prefix: string = "api/v1/") {
     DateParser.processDates(data);
 
-    let url = this.baseUrl + endpoint;
+    let url = this.baseUrl + prefix + endpoint;
     if (data) {
       url = `${url}?${querystring.stringify(data)}`;
     }
@@ -61,33 +64,33 @@ export class Client {
     });
   }
 
-  public post<T>(endpoint: string, data: any = {}) {
+  public post<T>(endpoint: string, data: any = {}, prefix: string = "api/v1/") {
     DateParser.processDates(data);
 
     return new Promise<T>((resolve, reject) => {
-      this.consumer.post(this.baseUrl + endpoint, this.getAccessToken(), this.getAccessSecret(), JSON.stringify(data), 'application/json',
+      this.consumer.post(this.baseUrl + prefix + endpoint, this.getAccessToken(), this.getAccessSecret(), JSON.stringify(data), 'application/json',
         (error: any, response: any) => this.resolveConsumerResponse(error, response, resolve, reject));
     });
   }
 
-  public put<T>(endpoint: string, data: any = {}) {
+  public put<T>(endpoint: string, data: any = {}, prefix: string = "api/v1/") {
     DateParser.processDates(data);
 
     return new Promise<T>((resolve, reject) => {
-      this.consumer.put(this.baseUrl + endpoint, this.getAccessToken(), this.getAccessSecret(), JSON.stringify(data), 'application/json',
+      this.consumer.put(this.baseUrl + prefix + endpoint, this.getAccessToken(), this.getAccessSecret(), JSON.stringify(data), 'application/json',
         (error: any, response: any) => this.resolveConsumerResponse(error, response, resolve, reject));
     });
   }
 
-  public delete<T>(endpoint: string) {
+  public delete<T>(endpoint: string, prefix: string = "api/v1/") {
     return new Promise<T>((resolve, reject) => {
-      this.consumer.delete(this.baseUrl + endpoint, this.getAccessToken(), this.getAccessSecret(),
+      this.consumer.delete(this.baseUrl + prefix + endpoint, this.getAccessToken(), this.getAccessSecret(),
         (error, data) => this.resolveConsumerResponse(error, data, resolve, reject));
     });
   }
 
   public getAccessToken() { return this.clientOptions ? this.clientOptions.accessToken : ''; }
-  public getBaseUrl() { return this.baseUrl; }
+  public getBaseUrl() { return this.baseUrl + this.prefix; }
 
   private loginWithAccessToken(token: string, secret: string) {
     const clonedOptions = this.clone(this.clientOptions);
