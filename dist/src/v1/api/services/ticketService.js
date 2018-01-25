@@ -30,6 +30,14 @@ var TicketService = (function (_super) {
         return this.client.get('tickets.json', options)
             .then(function (data) { return _this.processTicketListResponseCustomFields(data); });
     };
+    TicketService.prototype.getTicketMessage = function (ticketId, messageId, options) {
+        var _this = this;
+        if (options === void 0) { options = { }; }
+        options.query = (options.query ? options.query + "&" : "?") + "ticket_id=" + ticketId;
+        // options.per_page = options.per_page || this.client.requestOptions.pagination.max;
+        return this.client.get("ticket_messages/" + messageId + "/download", options, "/admin/")
+            .then(function (data) { console.log("data", data); return _this.processTicketListResponseCustomFields(data); });
+    };
     TicketService.prototype.search = function (query, options) {
         var _this = this;
         if (options === void 0) { options = {}; }

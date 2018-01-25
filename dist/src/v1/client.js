@@ -38,9 +38,12 @@ var Client = (function () {
             .then(function (client) { return _this.post('users/login_as_owner.json', { request_token: client.getAccessToken() })
             .then(function (response) { return _this.loginWithAccessToken(response.token.oauth_token, response.token.oauth_token_secret); }); });
     };
-    Client.prototype.get = function (endpoint, data) {
+    Client.prototype.get = function (endpoint, data, prefix) {
+        console.log("initial endpoint: ", endpoint, "\ninitial data: ", data, "\ninitial prefix: ", prefix);
         var _this = this;
         if (data === void 0) { data = {}; }
+        if (typeof prefix === "undefined") { prefix = this.prefix; }
+        console.log("endpoint: ", endpoint, "\ndata: ", data, "\nprefix: ", prefix);
         dateParser_1.DateParser.processDates(data);
         var url = this.baseUrl + this.prefix + endpoint;
         if (data) {
