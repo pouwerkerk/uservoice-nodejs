@@ -37,8 +37,9 @@ var TicketService = (function (_super) {
         // options.per_page = options.per_page || this.client.requestOptions.pagination.max;
         const endpoint = "ticket_messages/" + messageId + "/download";
         const prefix = "/admin/"
-        console.log("options", options);
-        console.log("prefix", prefix);
+        console.log("gtm, endpoint", endpoint);
+        console.log("gtm, options", options);
+        console.log("gtm, prefix", prefix);
         return this.client.get(endpoint, options, prefix)
             .then(function (data) { console.log("data", data); return _this.processTicketListResponseCustomFields(data); });
     };
