@@ -35,7 +35,11 @@ var TicketService = (function (_super) {
         if (options === void 0) { options = { }; }
         options.query = (options.query ? options.query + "&" : "?") + "ticket_id=" + ticketId;
         // options.per_page = options.per_page || this.client.requestOptions.pagination.max;
-        return this.client.get("ticket_messages/" + messageId + "/download", options, "/admin/")
+        const endpoint = "ticket_messages/" + messageId + "/download";
+        const prefix = "/admin/"
+        console.log("options", options);
+        console.log("prefix", prefix);
+        return this.client.get(endpoint, options, prefix)
             .then(function (data) { console.log("data", data); return _this.processTicketListResponseCustomFields(data); });
     };
     TicketService.prototype.search = function (query, options) {
