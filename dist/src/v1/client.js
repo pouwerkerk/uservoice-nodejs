@@ -39,16 +39,16 @@ var Client = (function () {
             .then(function (response) { return _this.loginWithAccessToken(response.token.oauth_token, response.token.oauth_token_secret); }); });
     };
     Client.prototype.get = function (endpoint, data, prefix) {
-        console.log("initial endpoint: ", endpoint, "\ninitial data: ", data, "\ninitial prefix: ", prefix);
         var _this = this;
         if (data === void 0) { data = {}; }
         if (typeof prefix === "undefined") { prefix = this.prefix; }
-        console.log("endpoint: ", endpoint, "\ndata: ", data, "\nprefix: ", prefix);
+
         dateParser_1.DateParser.processDates(data);
-        var url = this.baseUrl + this.prefix + endpoint;
+        var url = this.baseUrl + prefix + endpoint;
         if (data) {
             url = url + "?" + querystring.stringify(data);
         }
+
         return new Promise(function (resolve, reject) {
             _this.consumer.get(url, _this.getAccessToken(), _this.getAccessSecret(), function (error, response) { return _this.resolveConsumerResponse(error, response, resolve, reject); });
         });
